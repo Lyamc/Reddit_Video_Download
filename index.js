@@ -1,7 +1,11 @@
-const ffmpeg = require("fluent-ffmpeg");
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const ffmpeg = require('fluent-ffmpeg');
+ffmpeg.setFfmpegPath(ffmpegPath);
+
 const proc = new ffmpeg();
 const urlRegex = require("url-regex");
 const fetch = require("node-fetch");
+const os = require('os');
 
 var oneDownload = false;
 
@@ -15,13 +19,21 @@ if (process.argv.length <= 2) {
 
 const url = process.argv[2];
 
-var outputFolder = './';
 
-if (process.argv.length >= 4) outputFolder = process.argv[3];
+if (os.type() == 'Windows_NT') {
+          console.log(`OS = win32`);
+          var outputFolder = '.\\';
+          if (process.argv.length >= 4) outputFolder = process.argv[3];
+          if (!outputFolder.endsWith('/')) outputFolder += '\\';
+} else {
+	console.log(os.type());
+          var outputFolder = './';
+          if (process.argv.length >= 4) outputFolder = process.argv[3];
+          if (!outputFolder.endsWith('/')) outputFolder += '/';
+}
 
-if (!outputFolder.endsWith('/')) outputFolder += '/';
+const _res = [1080, 720, 480, 360, 240, 140, 120, 90, '2_4_M', '1_2_M'];
 
-const _res = [1080, 720, 480, 360, 240, 140, 120, '2_4_M', '1_2_M'];
 
 console.log(`Output folder > ${outputFolder}`);
 console.log(`URL > ${url}`);
@@ -34,28 +46,32 @@ fetch(url)
     const urls = body.match(urlRegex());
     const mediaUrls = urls.filter(url => url.includes("v.redd.it"));
     let mediaUrl = mediaUrls[0].split("https://v.redd.it/")[1];
-    mediaId = mediaUrl.split("/")[0];
+    mediaId = mediaUrl.split("/", 1);
+    console.log(`${mediaId}`);
     testUrls(mediaId);
 
   });
 
 function testUrls(mediaId) {
-  console.log('Hold on, Fetching the Best Quality');
+  console.log(`Hold on, fetching the best quality from https://v.redd.it/${mediaId}`);
   _res.forEach(res => {
-    fetch(`https://v.redd.it/${mediaId}/DASH_${res}`)
-      .then(response => {
+    // console.log(`Trying https://v.redd.it/${mediaId}/DASH_${res}.mp4`);
+    fetch(`https://v.redd.it/${mediaId}/DASH_${res}.mp4`)
+     .then(response => {
+	  // console.log(`${response.status}`);
         if (response.status === 200 && !oneDownload) {
           oneDownload = true;
-          console.log('Downloading With : ' + res + ' Please Wait ...');
+          console.log(`Trying https://v.redd.it/${mediaId}/DASH_${res}.mp4`);
+          console.log('Please Wait ...');
           scrape(mediaId, res);
-        }
-      });
+	}
+    });
   });
 }
 
 
 function scrape(mediaId, res) {
-  proc.addInput(`https://v.redd.it/${mediaId}/DASH_${res}`)
+  proc.addInput(`https://v.redd.it/${mediaId}/DASH_${res}.mp4`)
     .output(`${outputFolder}${mediaId}-${res}.mp4`)
     .on("error", err => {
       console.log("Error: " + err);
@@ -64,11 +80,11 @@ function scrape(mediaId, res) {
       console.log("Done");
     });
 
-  fetch(`https://v.redd.it/${mediaId}/audio`)
+  fetch(`https://v.redd.it/${mediaId}/DASH_audio.mp4`)
     .then(resp => {
       if (resp.status === 200) {
-        console.log('Founded audio track...')
-        proc.addInput(`https://v.redd.it/${mediaId}/audio`);
+        console.log('Found audio track...')
+        proc.addInput(`https://v.redd.it/${mediaId}/DASH_audio.mp4`);
       } else {
         console.log('No audio track...');
       }
