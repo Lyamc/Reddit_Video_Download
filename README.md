@@ -3,7 +3,9 @@
   <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuk-P3YD5bgst-6cKZ_FAtcpoKG5VX4jyepCzpJtJIu1wNlPQGEA" width="200" title="hover text">
 </p>
 
-# Donwload Sound
+This has been modified to work with latest Reddit urls. Old ones do not use mp4 extensions.
+
+# Download Sound
 
 - In order to download the video with sound, you have to clone the repo and work **locally** _"For the seek of combining Video & Audio_"
 
