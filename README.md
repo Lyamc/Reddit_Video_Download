@@ -17,11 +17,6 @@ node index.js <post url> [output folder]
 ```
 *PS: The output folder is not required, the default is `./`*
 
-- For Windows add the following command,
-```
-npm install --save @ffmpeg-installer/ffmpeg
-```
-
 ### Built With
 
 * [FFMPEG](https://www.npmjs.com/package/js-ffmpeg) - To combine Video Stream with Audio
