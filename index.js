@@ -21,10 +21,16 @@ const url = process.argv[2];
 
 
 if (os.type() == 'Windows_NT') {
+  exports.getUserHome = function() {
+return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+}
           console.log(`OS = win32`);
-          var outputFolder = '.\\';
+          var outputFolder = '';
+          var outputFolder = outputFolder.concat(os.homedir(), "\\Videos");
+
+          console.log(outputFolder);
           if (process.argv.length >= 4) outputFolder = process.argv[3];
-          if (!outputFolder.endsWith('/')) outputFolder += '\\';
+          if (!outputFolder.endsWith('\\')) outputFolder += '\\';
 } else {
 	console.log(os.type());
           var outputFolder = './';
