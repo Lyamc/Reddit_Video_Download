@@ -13,9 +13,9 @@ This has been modified to work with latest Reddit urls. Old ones do not use mp4 
 git clone https://github.com/Lyamc/Reddit_Video_Download
 cd Reddit_Video_Download
 npm install
-node index.js <post url> [output folder]
+node index.js <post url> [(optional) output folder]
 ```
-*PS: The output folder is not required, the default is `./`*
+*PS: The the default output folder is `./` on Linux/MacOS and `%USERPROFILE%\Videos` on Windows*
 
 ### Built With
 
